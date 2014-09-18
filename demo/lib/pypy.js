@@ -28,7 +28,7 @@ function PyPyJS(opts) {
 
   // Default to finding files relative to this very file.
   if (!this.rootURL && !PyPyJS.rootURL) {
-    PyPyJS.rootURL = "./";
+    PyPyJS.rootURL = "lib/";
     // A little hackery to find the URL of this very file.
     // Throw an error, then parse the stack trace looking for filenames.
     var errlines = (new Error()).stack.split("\n");
