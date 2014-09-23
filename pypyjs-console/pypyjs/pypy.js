@@ -166,7 +166,7 @@
         return new Promise((function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.onload = function () {
-                console.log('loaded', relpath);
+                console.log('loaded: '+relpath+" (status:"+xhr.status+")");
                 if (xhr.status >= 400) {
                     reject(xhr)
                 } else {
@@ -174,7 +174,9 @@
                 }
             };
             var rootURL = this.rootURL || PyPyJS.rootURL;
-            xhr.open('GET', rootURL + relpath, true);
+            var url=rootURL + relpath
+            console.log("Request: "+url+" ...");
+            xhr.open('GET', url, true);
             xhr.responseType = responseType || 'string';
             xhr.send(null);
         }).bind(this));

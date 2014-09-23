@@ -1,20 +1,21 @@
 $(function () {
     // Global vars, for easy debugging in console.
     window.jqconsole = $('#console').jqconsole('', '>>> ');
+    console.log = function (data) {
+        jqconsole.Write(data + "\n", 'jqconsole-output');
+    }
+    // Display a helpful message and twiddle thumbs as it loads.
+    console.log('Init PyPy.js, it\'s big, so this might take a while...\n\n')
+
     window.vm = new PyPyJS();
-    
+
     // Send all VM output to the console.
     vm.stdout = vm.stderr = function (data) {
         jqconsole.Write(data, 'jqconsole-output');
     }
-    console.log = vm.stdout;
-    
-    // Display a helpful message and twiddle thumbs as it loads.
-    vm.stdout('Loading PyPy.js.\n')
-    vm.stdout('It\'s big, so this might take a while...\n\n')
-    
+
     vm.ready.then(function () {
-        jqconsole.Reset();
+        // jqconsole.Reset();
         vm.stdout('Welcome to PyPy.js!\n')
         // Create an 'InteractiveConsole' to simulate the python shell.
         vm.eval('import code').then(function () {
