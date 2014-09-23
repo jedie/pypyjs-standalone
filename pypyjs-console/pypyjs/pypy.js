@@ -1,3 +1,14 @@
+function humanFileSize(bytes, si) {
+    if(bytes < 1024) return bytes + ' Bytes';
+    var units = ['kBytes','MBytes','GBytes','TBytes'];
+    var u = -1;
+    do {
+        bytes /= 1024;
+        ++u;
+    } while(bytes >= 1024);
+    return bytes.toFixed(1)+' '+units[u];
+};
+
 //
 //  PyPyJS:  an experimental in-browser python environment.
 //
@@ -41,7 +52,6 @@
         this.ready = new Promise((function (resolve, reject) {
             // Fetch the emscripten-compiled asmjs code.
             // We will need to eval() this in a scope with a custom 'Module' object.
-            console.log('fetching \'pypy.vm.js\'...');
             this.fetch('pypy.vm.js').then((function (xhr) {
                 // Initialize the Module object.
                 var Module = {};
@@ -96,6 +106,7 @@
                 // our "Module" object is populated with all the exported VM functions.
                 console.log('evaluating asmjs code...');
                 eval(xhr.responseText);
+                console.log('evaluating asmjs, done.');
                 
                 // Make the module available on this object.
                 // We will use its methods to execute code in the VM.
@@ -150,9 +161,10 @@
                                 this._writeModuleFile(name, modIndex.eager[name]);
                             }
                         }
-                        console.log('pypy.js is ready!');
+                        console.log('pypy.js is ready.\n');
                     }).bind(this));
                 }).bind(this))
+
             }).bind(this)).then(resolve, function (err) {
                 console.log(err);
                 reject(err)
@@ -164,9 +176,30 @@
     //
     PyPyJS.prototype.fetch = function fetch(relpath, responseType) {
         return new Promise((function (resolve, reject) {
+            console.log("Request: '"+relpath+"' ...");
             var xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                console.log('loaded: '+relpath+" (status:"+xhr.status+")");
+
+            function log_status(event) {
+                if (event.lengthComputable) {
+                    var percent = (event.loaded / event.total)*100;
+                    console.log(percent + "% loaded (" + humanFileSize(event.loaded) + ")");
+                } else {
+                    console.log(humanFileSize(event.loaded) + " loaded");
+                }
+            };
+
+            // Display every second a update
+            xhr.next_update = new Date().getTime() + 1000;
+            xhr.onprogress = function (event) {
+                if (new Date().getTime()>xhr.next_update) {
+                    log_status(event)
+                    xhr.next_update = new Date().getTime() + 1000;
+                }
+            };
+
+            xhr.onload = function (event) {
+                log_status(event)
+                console.log("Request: '"+relpath+"', done (status:"+xhr.status+")");
                 if (xhr.status >= 400) {
                     reject(xhr)
                 } else {
@@ -174,9 +207,7 @@
                 }
             };
             var rootURL = this.rootURL || PyPyJS.rootURL;
-            var url=rootURL + relpath
-            console.log("Request: "+url+" ...");
-            xhr.open('GET', url, true);
+            xhr.open('GET', rootURL + relpath, true);
             xhr.responseType = responseType || 'string';
             xhr.send(null);
         }).bind(this));

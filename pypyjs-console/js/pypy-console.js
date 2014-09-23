@@ -5,7 +5,7 @@ $(function () {
         jqconsole.Write(data + "\n", 'jqconsole-output');
     }
     // Display a helpful message and twiddle thumbs as it loads.
-    console.log('Init PyPy.js, it\'s big, so this might take a while...\n\n')
+    console.log('Init PyPy.js, it\'s big, so this might take a while...\n')
 
     window.vm = new PyPyJS();
 
@@ -16,7 +16,12 @@ $(function () {
 
     vm.ready.then(function () {
         // jqconsole.Reset();
-        vm.stdout('Welcome to PyPy.js!\n')
+
+        // Print version information
+        vm.eval('import sys').then(function () {
+            vm.eval('print("Python v" + sys.version)')
+        });
+
         // Create an 'InteractiveConsole' to simulate the python shell.
         vm.eval('import code').then(function () {
             vm.eval('c = code.InteractiveConsole()').then(function () {
