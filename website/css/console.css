@@ -1,10 +1,11 @@
 /* The console container element */
 #console {
-  position: relative;
-  width: 1000px;
-  height: 500px;
-  background-color:black;
-  font-size: 1.5em;
+  position: absolute;
+  width: 800px;
+  height: 300px;
+}
+#console pre {
+  background-color: black;
 }
 /* The inner console element. */
 .jqconsole {
