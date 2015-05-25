@@ -1,4 +1,3 @@
-pypyjs-standalone
-=================
+This project is obsolete!
 
-https://github.com/rfk/pypyjs/
+Please go to: https://github.com/jedie/pypyjs-source
